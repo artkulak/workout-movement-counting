@@ -20,6 +20,8 @@ def getArgs():
 
     return args.type, args.file
 
+
+takeFrame = 5
 if __name__ == '__main__':
 
     fileType, file = getArgs()
@@ -66,7 +68,7 @@ if __name__ == '__main__':
         rgb = cv.cvtColor(mask, cv.COLOR_HSV2BGR)
 
         cv.imshow("dense optical flow", rgb)
-        if i % 10 == 0:
+        if i % takeFrame == 0:
             cv.imwrite(f'''{folders['flow']}/{i}.png''', rgb)
             cv.imwrite(f'''{folders['frames']}/{i}.png''', frame)
         i+=1
