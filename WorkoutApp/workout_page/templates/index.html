@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script>
+
+    function updateStats(){
+        $(".liveStats").fadeOut(1000, function() {
+        $(".liveStats").html('').load("{% url 'updateStats' %}"); 
+        $(".liveStats").fadeIn();
+    });
+    }
+
+
+    function getWorkout(){
+        $.ajax({
+        type: 'GET',
+        url: "{% url 'showWorkout' %}",
+        data: {'name': $('.workoutSelector').find('option:selected').attr("name")},
+        success: function(response){  
+            $(".workoutInfo").html(response)
+        }
+        });
+    }
+
+    $(document).on("change", ".workoutSelector", function(){
+        getWorkout();
+    });
+    
+    setTimeout(getWorkout, 100);
+    setInterval(updateStats, 1000);
+
+
+  
+</script>
+<div class='row'>
+    <div class='col-lg streamSection'>
+        <table>
+            <tr>
+                
+                <td>
+                        <img src="{% url 'videostream' stream_path='video' %}">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class='col-md workoutCreation'>
+        <h5>Select workout</h5>
+        <form action="" method="post">
+            <select name="workout" class="workoutSelector">
+                {% for workout in workouts %}
+                <option name="{{ workout }}">{{ workout }}</option>
+                {% endfor %}
+                
+            </select>
+        </form>
+    </div>
+
+    <div class='col-sm'>
+        <form action="{% url 'startWorkout' %}" method='get'>
+            <button class='startWorkout' type="submit">Start Workout</button>
+        </form>
+    </div>
+    <div class='col-sm'>
+        <form action="{% url 'stopWorkout' %}" method='get'>
+            <button class='stopWorkout' type="submit">Stop Workout</button>
+        </form>
+    </div>
+
+    <div class = 'col-sm'>
+        <div class = 'workoutInfo'>
+
+        </div>
+    </div>
+
+</div>
+
+<div class='row h-500'>
+
+    <div class='liveStats'>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}
+
+
