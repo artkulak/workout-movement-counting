@@ -46,8 +46,8 @@ def get_frame():
                                     (output.shape[0] // 2, 30),
                                     font,
                                     fontScale,
-                                    (0, 255, 0),
-                                    lineType)
+                                    (253, 35, 91),
+                                    4)
 
                     if workout.isTabata:
 
@@ -76,7 +76,7 @@ def get_frame():
                                     bottomLeftCornerOfText,
                                     font,
                                     fontScale,
-                                    (0, 0, 255),
+                                    (253, 35, 91),
                                     thickness,lineType)
                     else:
                         # workout type
@@ -104,7 +104,7 @@ def get_frame():
                                     bottomLeftCornerOfText,
                                     font,
                                     fontScale,
-                                    (0, 0, 255),
+                                    (253, 35, 91),
                                     thickness,lineType)
 
                         
@@ -116,7 +116,7 @@ def get_frame():
                                     font,
                                     fontScale,
                                     (0, 255, 0),
-                                    lineType)
+                                    4)
 
                     fontScale = 5
                     thickness = 10
@@ -125,7 +125,7 @@ def get_frame():
                                 bottomLeftCornerOfText,
                                 font,
                                 fontScale,
-                                (0, 255, 0),
+                                (29, 254, 71),
                                 thickness,lineType)
 
             imgencode=cv2.imencode('.jpg',output)[1]
@@ -146,9 +146,9 @@ def index(request):
 
     global workouts
 
-    workouts = []
 
-    for wk in Workouts.objects.values_list('workout_name').distinct():
+    workouts = []
+    for index, wk in enumerate(Workouts.objects.values_list('workout_name').distinct()):
         workouts.append(wk[0])
 
     try:
@@ -167,10 +167,17 @@ def startWorkout(request):
 
     
     workout = Workout()
-    workouts = []
-    for wk in Workouts.objects.values_list('workout_name').distinct():
-        workouts.append(wk[0])
+    try:
+        workouts = [workoutName]
+    except:
+        pass
 
+    for wk in Workouts.objects.values_list('workout_name').distinct():
+        try:
+            if wk[0] != workoutName:
+                workouts.append(wk[0])
+        except:
+            workouts.append(wk[0])
     training_program, models = {}, {}
     restTimes = []
     isTabata = True
@@ -199,7 +206,17 @@ def stopWorkout(request):
     except:
         pass
 
+    try:
+        workouts = [workoutName]
+    except:
+        pass
 
+    for wk in Workouts.objects.values_list('workout_name').distinct():
+        try:
+            if wk[0] != workoutName:
+                workouts.append(wk[0])
+        except:
+            workouts.append(wk[0])
     try:
         template = "index.html"
         return render(request,template, {'workouts': workouts})
@@ -227,7 +244,7 @@ def playSound(request):
     else:
         return render(request, 'blank.html')
 
-def showStats(request):
+def showStats1(request):
     '''
     Updates current live stats while the workout is going.
     '''
@@ -240,14 +257,68 @@ def showStats(request):
         trainingTime, restingTime, performingTime, totalMoves = 0, 0, 0, 0
 
     if workout.isFinished:
-        return render(request, 'liveStats.html', { 'trainingTime': int(trainingTime), 
-                                                    'restingTime': int(restingTime),
-                                                    'performingTime': int(performingTime), 
-                                                    'totalMoves': int(totalMoves),
+        return render(request, 'stat1.html', { 'trainingTime': str(int(trainingTime)) + ' s', 
+                                                    # 'restingTime': int(restingTime),
+                                                    # 'performingTime': int(performingTime), 
+                                                    # 'totalMoves': int(totalMoves),
                                                     })
-
     else:
-        return render(request, 'blank.html')
+        return render(request, 'blankMoves.html')
+
+def showStats2(request):
+    '''
+    Updates current live stats while the workout is going.
+    '''
+
+    try:
+
+        trainingTime, restingTime, performingTime, totalMoves = workout.training_stats.get('totalTime', 0), workout.training_stats.get('restTime', 0),\
+            workout.training_stats.get('exerciseTime', 0), workout.training_stats.get('totalMoves', 0)
+    except:
+        trainingTime, restingTime, performingTime, totalMoves = 0, 0, 0, 0
+
+    if workout.isFinished:
+        return render(request, 'stat2.html', { 'restingTime': str(int(restingTime)) + ' s',
+                                                    })
+    else:
+        return render(request, 'blankMoves.html')
+
+def showStats3(request):
+    '''
+    Updates current live stats while the workout is going.
+    '''
+
+    try:
+
+        trainingTime, restingTime, performingTime, totalMoves = workout.training_stats.get('totalTime', 0), workout.training_stats.get('restTime', 0),\
+            workout.training_stats.get('exerciseTime', 0), workout.training_stats.get('totalMoves', 0)
+    except:
+        trainingTime, restingTime, performingTime, totalMoves = 0, 0, 0, 0
+
+    if workout.isFinished:
+        return render(request, 'stat3.html', { 'performingTime': str(int(performingTime)) + ' s'
+                                                    })
+    else:
+        return render(request, 'blankMoves.html')
+
+
+def showStats4(request):
+    '''
+    Updates current live stats while the workout is going.
+    '''
+
+    try:
+
+        trainingTime, restingTime, performingTime, totalMoves = workout.training_stats.get('totalTime', 0), workout.training_stats.get('restTime', 0),\
+            workout.training_stats.get('exerciseTime', 0), workout.training_stats.get('totalMoves', 0)
+    except:
+        trainingTime, restingTime, performingTime, totalMoves = 0, 0, 0, 0
+
+    if workout.isFinished:
+        return render(request, 'stat4.html', { 'totalMoves': str(int(totalMoves)) + ' rep'
+                                                    })
+    else:
+        return render(request, 'blankMoves.html')
 
 @gzip.gzip_page
 def dynamic_stream(request,stream_path="video"):

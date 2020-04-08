@@ -12,10 +12,31 @@
     }
 
 
-    function showStats(){
-        $(".liveStats").fadeOut(1000, function() {
-        $(".liveStats").html('').load("{% url 'showStats' %}"); 
-        $(".liveStats").fadeIn();
+    function showStats1(){
+        $(".stat1").fadeOut(1000, function() {
+        $(".stat1").html('').load("{% url 'showStats1' %}"); 
+        $(".stat1").fadeIn();
+    });
+    }
+
+    function showStats2(){
+        $(".stat2").fadeOut(1000, function() {
+        $(".stat2").html('').load("{% url 'showStats2' %}"); 
+        $(".stat2").fadeIn();
+    });
+    }
+
+    function showStats3(){
+        $(".stat3").fadeOut(1000, function() {
+        $(".stat3").html('').load("{% url 'showStats3' %}"); 
+        $(".stat3").fadeIn();
+    });
+    }
+
+    function showStats4(){
+        $(".stat4").fadeOut(1000, function() {
+        $(".stat4").html('').load("{% url 'showStats4' %}"); 
+        $(".stat4").fadeIn();
     });
     }
 
@@ -39,9 +60,13 @@
     $(document).on("change", ".workoutSelector", function(){
         getWorkout();
     });
+
     
     playSound();
-    setInterval(showStats, 1000);
+    setInterval(showStats1, 1000);
+    setInterval(showStats2, 1000);
+    setInterval(showStats3, 1000);
+    setInterval(showStats4, 1000);
     setTimeout(getWorkout, 100);
 
 
@@ -49,13 +74,13 @@
 </script>
 
 <div class="container">
-<div class='row mt-5 upperRowContent'>
+<div class='row mt-5 justify-content-between upperRowContent'>
     <div class='col-8 streamSection'>
-        <img src="{% url 'videostream' stream_path='video' %}">
+        <img class='streamVideo' src="{% url 'videostream' stream_path='video' %}">
     </div>
 
 
-    <div class='col-4 workoutSelection'>
+    <div class='col-3 workoutSelection'>
         <div class='row d-flex justify-content-center selectRow'>
             <h5>Select workout</h5>
         </div>
@@ -80,20 +105,42 @@
 
 </div>
 
-<div class='row mt-5 lowerRowContent'>
-    <div class='col-8 liveStatsColumn'>
-        <div class='liveStats'>
+<div class='row mt-5 justify-content-between lowerRowContent'>
+    <div class="col-2 liveStatsColumn">
+        <b>Training Time </b>
+        <div class='stat1'>
+
+        </div>
+
+    </div>
+
+    <div class="col-2 liveStatsColumn">
+        <b>Resting Time </b>
+        <div class='stat2'>
+
+        </div>
+    </div>
+    <div class="col-2 liveStatsColumn">
+        <b>Performing Time </b>
+        <div class='stat3'>
+
+        </div>
+    </div>
+    <div class="col-2 liveStatsColumn">
+        <b>Total Moves </b>
+        <div class='stat4'>
+
         </div>
     </div>
 
 
-    <div class='col-4 buttonsCol'>
-        <div class='row btn1'>
+    <div class='col-3 buttonsCol'>
+        <div class='row mt-3 justify-content-center btn1'>
             <form action="{% url 'startWorkout' %}" method='get'>
                 <button class='startWorkout' type="submit">Start Workout</button>
             </form>
     </div>
-    <div class='row btn2'>
+    <div class='row justify-content-center btn2'>
         <form action="{% url 'stopWorkout' %}" method='get'>
             <button class='stopWorkout' type="submit">Stop Workout</button>
         </form>

@@ -12,7 +12,7 @@ class ExerciseCapture:
     # Class for capturing the concrete exercise within time/move limit from stream or video input
 
     def __init__(self, model_path = 0, fromStream = True, timeWise = True, thresh = 10):
-        self.takeFrame = 2
+        self.takeFrame = 1
         self.IM_SIZE = (128, 128)
 
         self.model_path = model_path
