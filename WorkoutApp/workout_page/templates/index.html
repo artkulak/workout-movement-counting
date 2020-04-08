@@ -3,9 +3,18 @@
 
 <script>
 
-    function updateStats(){
+    function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+    }
+
+
+    function showStats(){
         $(".liveStats").fadeOut(1000, function() {
-        $(".liveStats").html('').load("{% url 'updateStats' %}"); 
+        $(".liveStats").html('').load("{% url 'showStats' %}"); 
         $(".liveStats").fadeIn();
     });
     }
@@ -22,68 +31,81 @@
         });
     }
 
+    function playSound(){
+        $(".sound").html('').load("{% url 'playSound' %}"); 
+        setTimeout(playSound, 1200);
+    }
+
     $(document).on("change", ".workoutSelector", function(){
         getWorkout();
     });
     
+    playSound();
+    setInterval(showStats, 1000);
     setTimeout(getWorkout, 100);
-    setInterval(updateStats, 1000);
 
 
   
 </script>
-<div class='row'>
-    <div class='col-lg streamSection'>
-        <table>
-            <tr>
-                
-                <td>
-                        <img src="{% url 'videostream' stream_path='video' %}">
-                </td>
-            </tr>
-        </table>
+
+<div class="container">
+<div class='row mt-5 upperRowContent'>
+    <div class='col-8 streamSection'>
+        <img src="{% url 'videostream' stream_path='video' %}">
     </div>
 
-    <div class='col-md workoutCreation'>
-        <h5>Select workout</h5>
-        <form action="" method="post">
-            <select name="workout" class="workoutSelector">
-                {% for workout in workouts %}
-                <option name="{{ workout }}">{{ workout }}</option>
-                {% endfor %}
-                
-            </select>
-        </form>
+
+    <div class='col-4 workoutSelection'>
+        <div class='row d-flex justify-content-center selectRow'>
+            <h5>Select workout</h5>
+        </div>
+        <div class='row d-flex justify-content-center workoutSelectionRow'>
+            <form action="" method="post">
+                <select name="workout" class="workoutSelector">
+                    {% for workout in workouts %}
+                    <option name="{{ workout }}">{{ workout }}</option>
+                    {% endfor %}
+                    
+                </select>
+            </form>
+        </div>
+        <div class='row d-flex justify-content-center workoutInfoRow'>
+            <div class = 'workoutInfo'>
+
+            </div>
+        </div>
     </div>
 
-    <div class='col-sm'>
-        <form action="{% url 'startWorkout' %}" method='get'>
-            <button class='startWorkout' type="submit">Start Workout</button>
-        </form>
+
+
+</div>
+
+<div class='row mt-5 lowerRowContent'>
+    <div class='col-8 liveStatsColumn'>
+        <div class='liveStats'>
+        </div>
     </div>
-    <div class='col-sm'>
+
+
+    <div class='col-4 buttonsCol'>
+        <div class='row btn1'>
+            <form action="{% url 'startWorkout' %}" method='get'>
+                <button class='startWorkout' type="submit">Start Workout</button>
+            </form>
+    </div>
+    <div class='row btn2'>
         <form action="{% url 'stopWorkout' %}" method='get'>
             <button class='stopWorkout' type="submit">Stop Workout</button>
         </form>
     </div>
-
-    <div class = 'col-sm'>
-        <div class = 'workoutInfo'>
-
-        </div>
     </div>
 
 </div>
 
-<div class='row h-500'>
-
-    <div class='liveStats'>
-    </div>
+<div class = "sound">
 </div>
 
-
-
-
+</div>
 
 {% endblock %}
 

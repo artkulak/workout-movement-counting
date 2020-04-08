@@ -22,8 +22,11 @@ class Workout:
 
 
         self.isStarted = False
+        self.isFinished = False
         self.isRest = False
         self.isTabata = False
+        self.playSound = False
+        self.playSoundFinish = False
         self.thresh = 0
         self.timeToStart = 0
 
@@ -36,8 +39,8 @@ class Workout:
         :param restTime: time to rest between each exercise
         :return: Collected stats for each training
         '''
-        self.isStarted = True
         self.isTabata = tabata
+        self.isFinished = False
         t = threading.currentThread()
         timeStart = time()
         timeEx = 0
@@ -53,6 +56,8 @@ class Workout:
 
             self.thresh = value
             self.ex = ExerciseCapture(model, fromStream=True, timeWise=tabata, thresh=value)
+            self.isStarted = True
+            self.playSound = True
             moves, totalTime = self.ex.runPipeline(cap)
 
 
@@ -65,6 +70,7 @@ class Workout:
             print(f'Rest for {restTimes[index]} seconds')
 
             timeStarted = time()
+            self.playSoundFinish = True
             while time() - timeStarted < restTimes[index]:
                 self.isRest = True
                 self.timeToStart = restTimes[index] - (time() - timeStarted)
@@ -90,6 +96,8 @@ class Workout:
         self.training_stats['restTime'] = restingTime
         self.training_stats['exerciseTime'] = timeEx
         self.training_stats['totalMoves'] = totalMoves
+
+        self.isFinished = True
 
         #return self.training_stats
 

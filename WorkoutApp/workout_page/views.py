@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, redirect
 from django.http import HttpResponse,StreamingHttpResponse, HttpResponseServerError, JsonResponse
 from django.views.decorators import gzip
 import cv2
@@ -34,35 +34,44 @@ def get_frame():
             frame, moves = workout.ex.origFrame, workout.ex.moves
             output = cv2.resize(frame, (640, 480))
             font = cv2.FONT_HERSHEY_SIMPLEX
-            bottomLeftCornerOfText = (20, 20)
+            bottomLeftCornerOfText = (30, 30)
             fontScale = 1
             fontColor = (255, 255, 255)
             lineType = 2
             if workout.isStarted:
                 if not workout.isRest:
+
+                    # printing current exercise
                     cv2.putText(output, str(workout.currentExercise),
-                                    (output.shape[0] // 2, 20),
+                                    (output.shape[0] // 2, 30),
                                     font,
                                     fontScale,
-                                    fontColor,
-                                    lineType)
-                    if workout.isTabata:
-                        cv2.putText(output, 'Tabata',
-                                    (output.shape[0] - 20, 20),
-                                    font,
-                                    fontScale,
-                                    fontColor,
+                                    (0, 255, 0),
                                     lineType)
 
-                        cv2.putText(output, str(moves),
+                    if workout.isTabata:
+
+                        # workout type
+                        cv2.putText(output, 'Tabata',
+                                    (output.shape[0] - 10, 30),
+                                    font,
+                                    fontScale,
+                                    fontColor,
+                                    lineType)
+                        
+                        # number of moves
+                        cv2.putText(output, str(moves) + ' moves',
                                     bottomLeftCornerOfText,
                                     font,
                                     fontScale,
                                     fontColor,
                                     lineType)
+
                         fontScale = 5
                         thickness = 10
                         bottomLeftCornerOfText = (output.shape[0] // 2, output.shape[1] // 2)
+
+                        # time left
                         cv2.putText(output, str(int(workout.thresh - workout.ex.totalTime)),
                                     bottomLeftCornerOfText,
                                     font,
@@ -70,8 +79,17 @@ def get_frame():
                                     (0, 0, 255),
                                     thickness,lineType)
                     else:
+                        # workout type
                         cv2.putText(output, 'Standard',
-                                    (output.shape[0] - 20, 20),
+                                    (output.shape[0] - 10, 30),
+                                    font,
+                                    fontScale,
+                                    fontColor,
+                                    lineType)
+
+                        # seconds passed
+                        cv2.putText(output, str(int(workout.ex.totalTime)) + ' secs',
+                                    bottomLeftCornerOfText,
                                     font,
                                     fontScale,
                                     fontColor,
@@ -80,6 +98,8 @@ def get_frame():
                         fontScale = 5
                         thickness = 10
                         bottomLeftCornerOfText = (output.shape[0] // 2, output.shape[1] // 2)
+
+                        # number of moves
                         cv2.putText(output, str(int(workout.thresh - moves)),
                                     bottomLeftCornerOfText,
                                     font,
@@ -89,6 +109,15 @@ def get_frame():
 
                         
                 else:
+
+                    # workout type
+                    cv2.putText(output, 'Pause',
+                                    (output.shape[0] // 2, 30),
+                                    font,
+                                    fontScale,
+                                    (0, 255, 0),
+                                    lineType)
+
                     fontScale = 5
                     thickness = 10
                     bottomLeftCornerOfText = (output.shape[0] // 2, output.shape[1] // 2)
@@ -164,8 +193,11 @@ def startWorkout(request):
         print("error", e)
 
 def stopWorkout(request):
-    workout.isStarted = False
-    th.do_run = False
+    try:
+        workout.isStarted = False
+        th.do_run = False
+    except:
+        pass
 
 
     try:
@@ -184,29 +216,38 @@ def showWorkout(request):
 
     return render(request,template, {'exercises': exercises})
 
-def updateStats(request):
+def playSound(request):
+
+    if workout.playSound:
+        workout.playSound = False
+        return render(request, 'soundPlay.html')
+    elif workout.playSoundFinish:
+        workout.playSoundFinish = False
+        return render(request, 'soundFinish.html')
+    else:
+        return render(request, 'blank.html')
+
+def showStats(request):
     '''
     Updates current live stats while the workout is going.
     '''
 
     try:
-        moves, totalTime, currentExercise = workout.ex.moves, workout.ex.totalTime, workout.currentExercise
 
         trainingTime, restingTime, performingTime, totalMoves = workout.training_stats.get('totalTime', 0), workout.training_stats.get('restTime', 0),\
             workout.training_stats.get('exerciseTime', 0), workout.training_stats.get('totalMoves', 0)
     except:
-        moves, totalTime, currentExercise = 0, 0, 'None'
         trainingTime, restingTime, performingTime, totalMoves = 0, 0, 0, 0
 
+    if workout.isFinished:
+        return render(request, 'liveStats.html', { 'trainingTime': int(trainingTime), 
+                                                    'restingTime': int(restingTime),
+                                                    'performingTime': int(performingTime), 
+                                                    'totalMoves': int(totalMoves),
+                                                    })
 
-    return render(request, 'liveStats.html', {'moveCounts':int(moves), 
-                                                'totalTime': int(totalTime), 
-                                                'currentExercise': currentExercise,
-                                                'trainingTime': int(trainingTime), 
-                                                'restingTime': int(restingTime),
-                                                'performingTime': int(performingTime), 
-                                                'totalMoves': int(totalMoves),
-                                                })
+    else:
+        return render(request, 'blank.html')
 
 @gzip.gzip_page
 def dynamic_stream(request,stream_path="video"):

@@ -1,0 +1,101 @@
+.nav-link {
+    color :#6cffb8;
+}
+
+body {
+    background-color: #fbfcfd;
+}
+
+.workoutSelection {
+}
+
+.streamSection {
+    /* border: 1px solid red; */
+    width:640px;
+    height:480px;
+    background-color: #ffffff;
+    border: 1px solid #d2d2d2;
+    border-radius: 5px;
+}
+
+.workoutSelection {
+    background-color: #ffffff;
+    border: 1px solid #d2d2d2;
+    border-radius: 5px;
+}
+.selectRow {
+}
+
+.workoutSelectionRow {
+}
+
+.workoutInfoRow {
+}
+
+.buttonsCol {
+    background-color: #ffffff;
+    border: 1px solid #d2d2d2;
+    border-radius: 5px;
+}
+
+.liveStatsColumn {
+    height:300px;
+    background-color: #ffffff;
+    border: 1px solid #d2d2d2;
+    border-radius: 5px;
+}
+
+.workoutButtons {
+    background-color: #ffffff;
+    border: 1px solid #d2d2d2;
+    border-radius: 5px;
+}
+
+.startWorkout {
+    background-color: #784bf9;
+    color: white;
+    border: none;
+    width: 175px;
+    height:50px;
+    font-size: 18px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    text-decoration: none;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.startWorkout:hover {background-color: #5b23fd}
+
+.stopWorkout {
+    background-color: white;
+    color: #b2b2b2;
+    width: 175px;
+    height:50px;
+    font-size: 18px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    text-decoration: none;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: none;
+    border: 2px solid #d2d2d2;
+    border-radius: 5px;
+}
+
+.stopWorkout:hover {background-color: #dcdcdc}
+
+.workoutInfo {
+    font-size: 18px;
+}
+
+.workoutInfoNumber {
+    font-size: 36px;
+    color: #784bf9;
+}
+
+.liveNumber {
+    font-size: 24px;
+    color: #784bf9;
+}
