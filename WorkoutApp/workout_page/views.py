@@ -22,10 +22,14 @@ from warnings import filterwarnings
 filterwarnings('ignore')
 
 
+def addText():
+    pass
+
 def get_frame():
 
     '''
-    Yields the current frame from the workout.ex class
+    Yields the current frame from the workout.ex class and puts some required text with info
+    into the frame
     '''
 
 
@@ -41,7 +45,7 @@ def get_frame():
             if workout.isStarted:
                 if not workout.isRest:
 
-                    # printing current exercise
+                    # current exercise
                     cv2.putText(output, str(workout.currentExercise),
                                     (output.shape[0] // 2, 30),
                                     font,
@@ -121,6 +125,8 @@ def get_frame():
                     fontScale = 5
                     thickness = 10
                     bottomLeftCornerOfText = (output.shape[0] // 2, output.shape[1] // 2)
+
+                    # time till next exercise
                     cv2.putText(output, str(int(workout.timeToStart)),
                                 bottomLeftCornerOfText,
                                 font,
@@ -147,6 +153,7 @@ def index(request):
     global workouts
 
 
+    # add all workouts from the database to the drop down list
     workouts = []
     for index, wk in enumerate(Workouts.objects.values_list('workout_name').distinct()):
         workouts.append(wk[0])
@@ -159,8 +166,12 @@ def index(request):
 
 
 def startWorkout(request):
+    '''
+    Renders the page with the current workout and starts training
+    '''
     global workout, th
     try:
+        # stop the thread with previous workout if it is running
         th.do_run = False
     except:
         pass
@@ -172,6 +183,7 @@ def startWorkout(request):
     except:
         pass
 
+    # display the workout that was selected before the page reload
     for wk in Workouts.objects.values_list('workout_name').distinct():
         try:
             if wk[0] != workoutName:
@@ -181,16 +193,20 @@ def startWorkout(request):
     training_program, models = {}, {}
     restTimes = []
     isTabata = True
+
+    # form the training program
     for ex in exercises:
         training_program[ex.exercise.exercise_name] = ex.numRepeats
         models[ex.exercise.exercise_name] = ex.exercise.model_path
         isTabata = ex.isTabata
         restTimes.append(ex.restTime)
 
+    # start workout and movement counting in a separate thread
     th = threading.Thread(target = workout.runTraining, args = (training_program, models, isTabata, restTimes))
     th.setDaemon(True)
     th.start()
 
+    # tell the thread it should run
     th.do_run = True
 
     try:
@@ -200,7 +216,11 @@ def startWorkout(request):
         print("error", e)
 
 def stopWorkout(request):
+    '''
+    Stops current workout training
+    '''
     try:
+        # stop workout thread
         workout.isStarted = False
         th.do_run = False
     except:
@@ -211,6 +231,8 @@ def stopWorkout(request):
     except:
         pass
 
+
+    # display the workout that was selected before the page reload
     for wk in Workouts.objects.values_list('workout_name').distinct():
         try:
             if wk[0] != workoutName:
@@ -224,6 +246,10 @@ def stopWorkout(request):
         print("error", e)
 
 def showWorkout(request):
+    '''
+    Shows the exercises which are in the selected workout
+    '''
+
     global exercises, workoutName
 
     workoutName = request.GET['name']
@@ -234,6 +260,9 @@ def showWorkout(request):
     return render(request,template, {'exercises': exercises})
 
 def playSound(request):
+    '''
+    Plays sound either at the beggining or ending of the current exercise
+    '''
 
     if workout.playSound:
         workout.playSound = False
@@ -250,18 +279,12 @@ def showStats1(request):
     '''
 
     try:
-
-        trainingTime, restingTime, performingTime, totalMoves = workout.training_stats.get('totalTime', 0), workout.training_stats.get('restTime', 0),\
-            workout.training_stats.get('exerciseTime', 0), workout.training_stats.get('totalMoves', 0)
+        trainingTime = workout.training_stats.get('totalTime', 0)
     except:
-        trainingTime, restingTime, performingTime, totalMoves = 0, 0, 0, 0
+        trainingTime = 0
 
     if workout.isFinished:
-        return render(request, 'stat1.html', { 'trainingTime': str(int(trainingTime)) + ' s', 
-                                                    # 'restingTime': int(restingTime),
-                                                    # 'performingTime': int(performingTime), 
-                                                    # 'totalMoves': int(totalMoves),
-                                                    })
+        return render(request, 'stat1.html', { 'trainingTime': str(int(trainingTime)) + ' s'})
     else:
         return render(request, 'blankMoves.html')
 
@@ -271,15 +294,13 @@ def showStats2(request):
     '''
 
     try:
-
-        trainingTime, restingTime, performingTime, totalMoves = workout.training_stats.get('totalTime', 0), workout.training_stats.get('restTime', 0),\
-            workout.training_stats.get('exerciseTime', 0), workout.training_stats.get('totalMoves', 0)
+        restingTime =  workout.training_stats.get('restTime', 0)
+            
     except:
-        trainingTime, restingTime, performingTime, totalMoves = 0, 0, 0, 0
+        restingTime = 0
 
     if workout.isFinished:
-        return render(request, 'stat2.html', { 'restingTime': str(int(restingTime)) + ' s',
-                                                    })
+        return render(request, 'stat2.html', { 'restingTime': str(int(restingTime)) + ' s'})
     else:
         return render(request, 'blankMoves.html')
 
@@ -290,14 +311,12 @@ def showStats3(request):
 
     try:
 
-        trainingTime, restingTime, performingTime, totalMoves = workout.training_stats.get('totalTime', 0), workout.training_stats.get('restTime', 0),\
-            workout.training_stats.get('exerciseTime', 0), workout.training_stats.get('totalMoves', 0)
+        performingTime = workout.training_stats.get('exerciseTime', 0)
     except:
-        trainingTime, restingTime, performingTime, totalMoves = 0, 0, 0, 0
+        performingTime = 0
 
     if workout.isFinished:
-        return render(request, 'stat3.html', { 'performingTime': str(int(performingTime)) + ' s'
-                                                    })
+        return render(request, 'stat3.html', { 'performingTime': str(int(performingTime)) + ' s'})
     else:
         return render(request, 'blankMoves.html')
 
@@ -309,14 +328,12 @@ def showStats4(request):
 
     try:
 
-        trainingTime, restingTime, performingTime, totalMoves = workout.training_stats.get('totalTime', 0), workout.training_stats.get('restTime', 0),\
-            workout.training_stats.get('exerciseTime', 0), workout.training_stats.get('totalMoves', 0)
+        totalMoves =  workout.training_stats.get('totalMoves', 0)
     except:
-        trainingTime, restingTime, performingTime, totalMoves = 0, 0, 0, 0
+        totalMoves = 0
 
     if workout.isFinished:
-        return render(request, 'stat4.html', { 'totalMoves': str(int(totalMoves)) + ' rep'
-                                                    })
+        return render(request, 'stat4.html', { 'totalMoves': str(int(totalMoves)) + ' rep'})
     else:
         return render(request, 'blankMoves.html')
 

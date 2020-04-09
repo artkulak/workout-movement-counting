@@ -1,6 +1,9 @@
 from django.db import models
 
 class Exercise(models.Model):
+    '''
+    Table in the database for a single exercise
+    '''
     exercise_name = models.CharField(max_length = 100)
     exercise_desc = models.TextField()
 
@@ -11,6 +14,10 @@ class Exercise(models.Model):
         return self.exercise_name
 
 class Workouts(models.Model):
+    '''
+    Table in the database for the workout, which consists of several
+    exercises
+    '''
     workout_name = models.CharField(max_length = 100)
     
     exercise_num = models.IntegerField(default = 1)
