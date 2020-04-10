@@ -3,7 +3,7 @@
 
 This repository contains my coursework as 3rd year BSc in HSE. I had to create a web app, which helps sportsmen to count their movements during the workout.
 Also checkout my Medium writeup regarding this problem: 
-https://medium.com/@artkulakov/how-i-created-the-workout-movement-counting-app-using-deep-learning-and-optical-flow-89f9d2e087ac?source=friends_link&sk=e14ec243ea1ff3bb42c3c4d05067e85c
+https://medium.com/@artkulakov/how-i-created-the-workout-movement-counting-app-using-deep-learning-and-optical-flow
 
 For this purpose I combined the Dense Optical Flow algorithm with a simple CNN network written in PyTorch. As you can see, it is pretty easy to get the idea of what one push-up is, if we look at how frames are converted to Dense Optical Flow representation in my algorithm.
 
