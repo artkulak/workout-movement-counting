@@ -55,7 +55,7 @@ class Workout:
                 print(f'Performing {key} for {value} seconds')
 
             self.thresh = value
-            self.ex = ExerciseCapture(model, fromStream=True, timeWise=tabata, thresh=value)
+            self.ex = ExerciseCapture(model, fromStream=True, timeWise=tabata, thresh=value, name=key)
             self.isStarted = True
             self.playSound = True
             moves, totalTime = self.ex.runPipeline(cap)
@@ -95,7 +95,7 @@ class Workout:
         self.training_stats['totalTime'] = trainingTime
         self.training_stats['restTime'] = restingTime
         self.training_stats['exerciseTime'] = timeEx
-        self.training_stats['totalMoves'] = totalMoves
+        self.training_stats['totalMoves'] = int(totalMoves)
 
         self.isFinished = True
 

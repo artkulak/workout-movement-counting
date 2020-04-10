@@ -11,7 +11,7 @@ from time import time
 class ExerciseCapture:
     # Class for capturing the concrete exercise within time/move limit from stream or video input
 
-    def __init__(self, model_path = 0, fromStream = True, timeWise = True, thresh = 10):
+    def __init__(self, model_path = 0, fromStream = True, timeWise = True, thresh = 10, name = 'None'):
         self.takeFrame = 1
         self.IM_SIZE = (128, 128)
 
@@ -21,7 +21,7 @@ class ExerciseCapture:
         self.thresh = thresh
 
         self.utils = Utils(self.fromStream)
-
+        self.name = name
 
 
         # loading model and image transforms
@@ -67,7 +67,10 @@ class ExerciseCapture:
         :return: current label sequnce and total move count
         '''
         if self.utils.contains(np.array(labels)[np.array(labels) != 1], np.array(sequence)):
-            moves += 1
+            if self.name == 'Sit up':
+                moves += 1
+            else:
+                moves += 1
             labels = [1, 1, 1, 1, 1]
         return labels, moves
 

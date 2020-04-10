@@ -22,9 +22,6 @@ from warnings import filterwarnings
 filterwarnings('ignore')
 
 
-def addText():
-    pass
-
 def get_frame():
 
     '''
@@ -64,7 +61,7 @@ def get_frame():
                                     lineType)
                         
                         # number of moves
-                        cv2.putText(output, str(moves) + ' moves',
+                        cv2.putText(output, str(int(moves)) + ' moves',
                                     bottomLeftCornerOfText,
                                     font,
                                     fontScale,
@@ -104,7 +101,7 @@ def get_frame():
                         bottomLeftCornerOfText = (output.shape[0] // 2, output.shape[1] // 2)
 
                         # number of moves
-                        cv2.putText(output, str(int(workout.thresh - moves)),
+                        cv2.putText(output, str(int(workout.thresh - int(moves))),
                                     bottomLeftCornerOfText,
                                     font,
                                     fontScale,
