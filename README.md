@@ -20,7 +20,7 @@ To run the web app follow the instructions below.
 
 
 ## Instructions
-1. Clone the repo and run `pip -r install requirements.txt`
+1. Clone the repo and run `pip install -r requirements.txt`
 2. `cd WorkoutApp/`
 3. Run the app with `python manage.py runserver`
 4. Choose the predefined workout and test!
